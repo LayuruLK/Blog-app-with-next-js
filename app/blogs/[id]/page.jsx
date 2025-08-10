@@ -4,23 +4,23 @@ import Footer from '@/Components/Footer'
 import axios from 'axios'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 
 const page = ({ params }) => {
+    const { id } = use(params);
     const [data, setData] = useState(null);
 
-    const fetchBlogData = async() => {
-        const response = await axios.get('/api/blog',{
-            params:{
-                id:params.id
-            }
-        })
-        setData(response.data)
-    }
-
-    useEffect(()=>{
-        fetchBlogData();
-    },[])
+    useEffect(() => {
+    const fetchBlogData = async () => {
+      try {
+        const response = await axios.get('/api/blog', { params: { id } });
+        setData(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchBlogData();
+  }, [id]);
 
     return (data ? <>
         <div className='bg-gray-200 py-5 px-5 md:px-12 lg:px-28'>
