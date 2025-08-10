@@ -38,10 +38,11 @@ const page = ({ params }) => {
         </div>
         <div className='mx-5 max-w-[800px] md:mx-auto mt-[-100px] mb-10'>
             <Image className='border-4 border-white ' src={data.blog.image} alt='' width={1280} height={720}/>
-            <h1 className='my-8 text-[26px] font-semibold'>Introduction:</h1>
+            
             <p>{data.blog.category}</p>
-            <h3 className='my-5 text-[18px] font-semibold'></h3>
-            <p className='my-3'>{data.blog.description}</p>
+            
+            <div className='block-content' dangerouslySetInnerHTML={{__html:data.blog.description}}></div>
+           
 
             <div className='my-24'>
                 <p className='text-black font font-semibold my-4'>Share this article on Social media</p>

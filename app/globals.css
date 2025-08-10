@@ -8,3 +8,32 @@
    -ms-overflow-style: none;
    scrollbar-width: none ;
 }
+
+.block-content{
+    padding: 36px 0;
+}
+
+.block-content b{
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.block-content p{
+    margin-bottom: 10px;
+}
+.block-content h1 {
+     margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 26px;
+}
+.block-content h2 {
+     margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 22px;
+}
+.block-content h3 {
+     margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 18px;
+}
+
