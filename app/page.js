@@ -1,4 +1,5 @@
 'use client'
+import AssistantButton from "@/Components/AssistantButton";
 import BlogList from "@/Components/BlogList";
 import ChatWidget from "@/Components/ChatWidget";
 import Footer from "@/Components/Footer";
@@ -10,7 +11,7 @@ export default function Home() {
    <>
     <Header/>
     <BlogList/>
-    <ChatWidget/>
+    <AssistantButton/>
     <Footer/>
     <ToastContainer />
    </>
