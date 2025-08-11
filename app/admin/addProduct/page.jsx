@@ -73,6 +73,7 @@ const page = () => {
                     <option value="Startup">Startup</option>
                     <option value="Technology">Technology</option>
                     <option value="Lifestyle">Lifestyle</option>
+                    <option value="Medicine">Medicine</option>
                 </select>
                 <br />
                 <button type="submit" className='mt-8 w-40 h-12 bg-black text-white'>ADD</button>

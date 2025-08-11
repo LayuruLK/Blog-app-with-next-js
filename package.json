@@ -2,16 +2,25 @@
   "name": "next-blog-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "embed": "node scripts/createEmbeddings.js"
   },
   "dependencies": {
+    "@huggingface/inference": "^4.6.1",
+    "@langchain/community": "^0.3.50",
+    "@langchain/core": "^0.3.68",
     "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "langchain": "^0.3.30",
     "mongoose": "^8.17.1",
     "next": "15.4.6",
+    "node-fetch": "^3.3.2",
+    "openai": "^5.12.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-toastify": "^11.0.5"
