@@ -2,6 +2,11 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { getEmbedding, cosineSimilarity } from '@/lib/utils.js';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request) {
   try {
@@ -26,7 +31,7 @@ export async function POST(request) {
     // 2. Retrieve relevant blog chunks from MongoDB
     const client = new MongoClient(process.env.MONGODB_URI);
     let relevantChunks = [];
-    
+
     try {
       await client.connect();
       const db = client.db(process.env.MONGODB_DB);
@@ -40,15 +45,6 @@ export async function POST(request) {
           ...doc,
           score: cosineSimilarity(questionVector, doc.vector),
         }));
-
-        const topSimilarities = similarities
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 5);
-        
-        console.log('Top 5 similarity scores:');
-        topSimilarities.forEach((doc, i) => {
-          console.log(`${i + 1}. Score: ${doc.score.toFixed(4)}, Title: "${doc.title}"`);
-        });
 
         const threshold = parseFloat(process.env.SIMILARITY_THRESHOLD || 0.3);
         relevantChunks = similarities
@@ -64,28 +60,34 @@ export async function POST(request) {
       await client.close();
     }
 
-    // 3. Create answer from relevant chunks (without LLM)
-    let answer;
-    
-    if (relevantChunks.length > 0) {
-      // Format the response nicely
-      const topChunk = relevantChunks[0];
-      
-      answer = `Based on the blog content about "${topChunk.title}":\n\n${topChunk.chunk}`;
-      
-      // If there are more relevant chunks, add them
-      if (relevantChunks.length > 1) {
-        answer += "\n\nAdditional related information:\n";
-        relevantChunks.slice(1, 3).forEach((chunk, index) => {
-          answer += `\n${index + 2}. From "${chunk.title}":\n${chunk.chunk.substring(0, 200)}...`;
-        });
-      }
-    } else {
-      answer = `I couldn't find specific information about "${question}" in the blog content. The available topics include various medical and pharmaceutical subjects. Could you try asking about a more specific topic?`;
+    // 3. Use GPT-4o-mini to generate a contextual answer
+    let systemPrompt = `You are a helpful assistant. 
+Use the following blog excerpts to answer the question. 
+If you are unsure or the answer is not contained in the context, say so clearly.
+
+Context:
+${relevantChunks.map(c => `From "${c.title}": ${c.chunk}`).join("\n\n")}`;
+
+    let finalAnswer;
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: question }
+        ],
+        temperature: 0.3,
+        max_tokens: 500
+      });
+
+      finalAnswer = completion.choices[0].message.content.trim();
+    } catch (llmError) {
+      console.error("OpenAI API error:", llmError);
+      finalAnswer = `I couldn't generate a GPT-4o-mini response due to an API error.`;
     }
 
-    return NextResponse.json({ answer });
-    
+    return NextResponse.json({ answer: finalAnswer });
+
   } catch (error) {
     console.error('Chat API Error:', error);
     return NextResponse.json({ 
